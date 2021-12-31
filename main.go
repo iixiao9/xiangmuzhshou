@@ -40,7 +40,17 @@ func queryMore(id int) {
 
 //插入
 func insert() {
-
+	sqlStr := `insert into user(projects, namea, nameb, amount, bmount) values("项目名称","用户1","用户2",100,200)`
+	ret, err := db.Exec(sqlStr)
+	if err != nil {
+		fmt.Printf("inster failed,err %v\n", err)
+		return
+	}
+	id, err := ret.LastInsertId()
+	if err != nil {
+		fmt.Printf("get id failed, err:%v\n", err)
+	}
+	fmt.Println("id", id)
 }
 
 func initDB() (err error) {
@@ -75,5 +85,6 @@ func main() {
 	}
 	fmt.Println("连接数据成功!")
 	//queryOne(2)
+	insert()
 	queryMore(0)
 }
