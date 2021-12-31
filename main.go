@@ -10,9 +10,32 @@ import (
 //定义连接池
 var db *sql.DB
 
-//查询
-func query() {
+//单查询
+func queryOne(id int) {
+	var u1 user
+	sqlStr := `select id, projects, namea, nameb, amount, bmount  from user where id=?;`
+	db.QueryRow(sqlStr, id).Scan(&u1.id, &u1.projects, &u1.namea, &u1.nameb, &u1.amount, &u1.bmount)
+	fmt.Printf("u1:%#v\n", u1)
+}
 
+//多查询
+func queryMore(id int) {
+	sqlStr := `select id, projects, namea, nameb, amount, bmount  from user where id > ?;`
+	rows, err := db.Query(sqlStr, id)
+	if err != nil {
+		fmt.Printf("exec %s query failed, error: %v\n", sqlStr, err)
+		return
+	}
+	defer rows.Close()
+	//循环读取
+	for rows.Next() {
+		var u1 user
+		err := rows.Scan(&u1.id, &u1.projects, &u1.namea, &u1.nameb, &u1.amount, &u1.bmount)
+		if err != nil {
+			fmt.Printf("scan failed ,err %v\n", err)
+		}
+		fmt.Printf("u1:%#v\n", u1)
+	}
 }
 
 //插入
@@ -30,6 +53,8 @@ func initDB() (err error) {
 	if err != nil {
 		return err
 	}
+	db.SetMaxOpenConns(100)
+	db.SetMaxIdleConns(50)
 	return nil
 }
 
@@ -49,9 +74,6 @@ func main() {
 		return
 	}
 	fmt.Println("连接数据成功!")
-	var u1 user
-	sqlStr := `select id, projects, namea, nameb, amount, bmount  from user where id=1;`
-	rowObj := db.QueryRow(sqlStr)
-	rowObj.Scan(&u1.id, &u1.projects, &u1.namea, &u1.nameb, &u1.amount, &u1.bmount)
-	fmt.Printf("u1:%#v\n", u1)
+	//queryOne(2)
+	queryMore(0)
 }
