@@ -53,6 +53,22 @@ func insert() {
 	fmt.Println("id", id)
 }
 
+//更新数据
+func updateRow(Namount int, Nid int) {
+	sqlStr := `update user set amount=? where id = ?`
+	ret, err := db.Exec(sqlStr, Namount, Nid)
+	if err != nil {
+		fmt.Printf("update failed, err:%v\n", err)
+		return
+	}
+	n, err := ret.RowsAffected()
+	if err != nil {
+		fmt.Printf("get id failed, err:%v\n", err)
+		return
+	}
+	fmt.Printf("更新了%d行数据\n", n)
+}
+
 func initDB() (err error) {
 	dsn := "root:123456@tcp(192.168.1.10:3306)/test?charset=utf8mb4&parseTime=True"
 	db, err = sql.Open("mysql", dsn)
@@ -85,6 +101,7 @@ func main() {
 	}
 	fmt.Println("连接数据成功!")
 	//queryOne(2)
-	insert()
+	//insert()
+	updateRow(99, 4)
 	queryMore(0)
 }
